@@ -1,0 +1,49 @@
+piVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: my-deploy
+  labels:
+    app: myapp
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: myapp
+  replicas: 10
+  template:
+    metadata:
+      name: deploy-assign
+      namespace: texto
+      labels:
+        app: myapp
+    spec:
+      volumes:
+      - name: my-pv
+        persistentVolumeClaim:
+          claimName: pvc
+      containers:
+      - name: my-cont
+        image: aamirpinger/helloworld
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: my-pv
+          mountPath: /home/Desktop/Axiom/datak
+        readinessProbe:
+        tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          failureThreshold: 3
+
